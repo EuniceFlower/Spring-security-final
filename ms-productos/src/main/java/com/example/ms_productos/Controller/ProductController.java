@@ -3,6 +3,7 @@ package com.example.ms_productos.Controller;
 import com.example.ms_productos.entity.Producto;
 import com.example.ms_productos.request.RequestProducto;
 import com.example.ms_productos.service.ProductoService;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -20,7 +21,7 @@ public class ProductController {
 
 
     @PostMapping("/create")
-    private ResponseEntity<Producto> create(@RequestBody RequestProducto product) {
+    private ResponseEntity<Producto> create(@Valid @RequestBody RequestProducto product) {
         return ResponseEntity.ok(productoService.createProduct(product));
     }
 
@@ -29,7 +30,7 @@ public class ProductController {
         return ResponseEntity.ok(productoService.ListProduct());
     }
     @PutMapping("/productos/{id}")
-    private ResponseEntity<Producto> update(@RequestBody RequestProducto product,
+    private ResponseEntity<Producto> update(@Valid @RequestBody RequestProducto product,
                                             @PathVariable Long id) {
         return ResponseEntity.ok(productoService.updateProduct(product, id));
     }

@@ -22,23 +22,17 @@ public class ProductoServiceImpl implements ProductoService {
 
     @Override
     public Producto createProduct(RequestProducto requestProducto) {
-        return Optional.of(productoRepository.save(Producto.builder()
+        return productoRepository.save(Producto.builder()
                                 .nombre(requestProducto.getNombre())
                                 .precio(requestProducto.getPrecio())
                                 .categoria(requestProducto.getCategoria())
-                                .build())).orElseThrow(() -> new RuntimeException("Error al guardar el producto"));
+                                .build());
     }
 
     @Override
     public List<Producto> ListProduct() {
         try {
-        return productoRepository.findAll().stream()
-                .map(producto -> Producto.builder()
-                        .id(producto.getId())
-                        .nombre(producto.getNombre())
-                        .precio(producto.getPrecio())
-                        .categoria(producto.getCategoria())
-                        .build()).toList();
+        return productoRepository.findAll();
         }catch (Exception e){
             throw new RuntimeException("Error al listar los productos" + e.getMessage());
         }
