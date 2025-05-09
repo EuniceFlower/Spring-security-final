@@ -6,6 +6,7 @@ import com.example.securityProject.aggregates.response.SignInResponse;
 import com.example.securityProject.entity.Usuario;
 import com.example.securityProject.service.AuthenticationService;
 import io.jsonwebtoken.SignatureAlgorithm;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.http.ResponseEntity;
@@ -24,7 +25,7 @@ public class AuthenticationController {
     private final AuthenticationService authenticationService;
 
     @PostMapping("/register")
-    public ResponseEntity<Usuario> signUpUser(@RequestBody SignUpRequest signUpRequest){
+    public ResponseEntity<Usuario> signUpUser(@Valid @RequestBody SignUpRequest signUpRequest){
         return ResponseEntity.ok(authenticationService.signUpUser(signUpRequest));
     }
 //esto no, este va a servir para generar mi key que pegarpe en propertie key.signature

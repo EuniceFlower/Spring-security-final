@@ -2,6 +2,7 @@ package com.example.ms_productos.Controller;
 
 import com.example.ms_productos.entity.Producto;
 import com.example.ms_productos.request.RequestProducto;
+import com.example.ms_productos.response.BaseResponse;
 import com.example.ms_productos.service.ProductoService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -21,21 +22,23 @@ public class ProductController {
 
 
     @PostMapping("/create")
-    private ResponseEntity<Producto> create(@Valid @RequestBody RequestProducto product) {
-        return ResponseEntity.ok(productoService.createProduct(product));
+    private ResponseEntity<BaseResponse<Producto>> create(@Valid @RequestBody RequestProducto product) {
+        return productoService.createProduct(product);
     }
 
     @GetMapping("/productos")
-    private ResponseEntity<List<Producto>> getAll() {
-        return ResponseEntity.ok(productoService.ListProduct());
+    private ResponseEntity<BaseResponse<List<Producto>>> getAll() {
+        return productoService.ListProduct();
     }
     @PutMapping("/productos/{id}")
-    private ResponseEntity<Producto> update(@Valid @RequestBody RequestProducto product,
+    private ResponseEntity<BaseResponse<Producto>> update(@Valid @RequestBody RequestProducto product,
                                             @PathVariable Long id) {
-        return ResponseEntity.ok(productoService.updateProduct(product, id));
+        return productoService.updateProduct(product, id);
     }
     @DeleteMapping("/productos/{id}")
-    private ResponseEntity<Producto> delete(@PathVariable Long id) {
-        return ResponseEntity.ok(productoService.deleteProduct(id));
+    private ResponseEntity<BaseResponse<Producto>> delete(@PathVariable Long id) {
+        return productoService.deleteProduct(id);
     }
+
+
 }

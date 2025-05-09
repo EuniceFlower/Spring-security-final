@@ -1,11 +1,10 @@
 package com.example.ms_productos.service.impl;
 
+import com.example.ms_productos.constants.Constants;
 import com.example.ms_productos.entity.Producto;
 import com.example.ms_productos.repository.ProductoRepository;
 import com.example.ms_productos.request.RequestProducto;
-import com.example.ms_productos.response.ResponseValidate;
-import com.example.ms_productos.rest.ClientAuth;
-import com.example.ms_productos.rest.ClientAuthService;
+import com.example.ms_productos.response.BaseResponse;
 import com.example.ms_productos.service.ProductoService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -21,44 +20,102 @@ public class ProductoServiceImpl implements ProductoService {
     private final ProductoRepository productoRepository;
 
     @Override
-    public Producto createProduct(RequestProducto requestProducto) {
-        return productoRepository.save(Producto.builder()
-                                .nombre(requestProducto.getNombre())
-                                .precio(requestProducto.getPrecio())
-                                .categoria(requestProducto.getCategoria())
-                                .build());
-    }
+    public ResponseEntity<BaseResponse<Producto>> createProduct(RequestProducto requestProducto) {
+        boolean exists = productoRepository.existsByNombre(requestProducto.getNombre());
 
-    @Override
-    public List<Producto> ListProduct() {
-        try {
-        return productoRepository.findAll();
-        }catch (Exception e){
-            throw new RuntimeException("Error al listar los productos" + e.getMessage());
-        }
-    }
-
-    @Override
-    public Producto updateProduct(RequestProducto producto, Long id) {
-        Producto product = productoRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Error al buscar el producto"));
-
-        if (product != null) {
-            product.setNombre(producto.getNombre());
-            product.setPrecio(producto.getPrecio());
-            product.setCategoria(producto.getCategoria());
-            return productoRepository.save(product);
+        if (exists) {
+            return ResponseEntity.ofNullable(BaseResponse.<Producto>builder()
+                    .code(Constants.CODE_EXIST)
+                    .message(Constants.MSJ_EXIST)
+                    .build());
         } else {
-            throw new RuntimeException("Error al actualizar el producto");
+            Producto producto = productoRepository.save(Producto.builder()
+                    .nombre(requestProducto.getNombre())
+                    .precio(requestProducto.getPrecio())
+                    .categoria(requestProducto.getCategoria())
+                    .build());
+            return ResponseEntity.ofNullable(BaseResponse.<Producto>builder()
+                    .code(Constants.CODE_OK)
+                    .message(Constants.MSJ_OK)
+                    .data(Optional.of(producto))
+                    .build());
         }
     }
 
     @Override
-    public Producto deleteProduct(Long id) {
-        Producto product = productoRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Error al buscar el producto o no existe"));
+    public ResponseEntity<BaseResponse<List<Producto>>> ListProduct() {
+        List<Producto> productos = productoRepository.findAll();
+        BaseResponse<List<Producto>> response;
+
+        if (!productos.isEmpty()) {
+            response = BaseResponse.<List<Producto>>builder()
+                    .code(Constants.CODE_OK)
+                    .message(Constants.MSJ_OK)
+                    .data(Optional.of(productos))
+                    .build();
+        } else {
+             response = BaseResponse.<List<Producto>>builder()
+                    .code(Constants.CODE_EXIST)
+                    .message(Constants.MSJ_EMPTY)
+                    .data(Optional.empty())
+                    .build();
+        }
+        return ResponseEntity.ok(response);
+    }
+
+    @Override
+    public ResponseEntity<BaseResponse<Producto>> updateProduct(RequestProducto requestProducto, Long id) {
+        BaseResponse<Producto> response;
+
+        if (productoRepository.existsById(id)) {
+            Producto product = productoRepository.findById(id)
+                    .orElseThrow(() -> new RuntimeException("Error al buscar el producto"));
+
+            Producto update = setUpdate(product, requestProducto);
+            response = BaseResponse.<Producto>builder()
+                    .code(Constants.CODE_OK)
+                    .message(Constants.MSJ_OK)
+                    .data(Optional.of(productoRepository.save(update)))
+                    .build();
+        } else {
+            response = BaseResponse.<Producto>builder()
+                    .code(Constants.CODE_EXIST)
+                    .message(Constants.MSJ_EMPTY)
+                    .data(Optional.empty())
+                    .build();
+        }
+        return ResponseEntity.ok(response);
+    }
+
+    @Override
+    public ResponseEntity<BaseResponse<Producto>> deleteProduct(Long id) {
+        BaseResponse<Producto> response;
+
+        if (productoRepository.existsById(id)) {
+            Producto product = productoRepository.findById(id)
+                    .orElseThrow(() -> new RuntimeException("Error al buscar el producto"));
             productoRepository.delete(product);
-        return product;
+            response = BaseResponse.<Producto>builder()
+                    .code(Constants.CODE_OK)
+                    .message(Constants.MSJ_DELETE)
+                    .data(Optional.of(product))
+                    .build();
+        } else {
+            response = BaseResponse.<Producto>builder()
+                    .code(Constants.CODE_EXIST)
+                    .message(Constants.MSJ_EMPTY)
+                    .data(Optional.empty())
+                    .build();
+
+        }
+        return ResponseEntity.ok(response);
+    }
+
+    private Producto setUpdate(Producto producto, RequestProducto requestProducto) {
+        producto.setNombre(requestProducto.getNombre());
+        producto.setPrecio(requestProducto.getPrecio());
+        producto.setCategoria(requestProducto.getCategoria());
+        return producto;
     }
 
 }

@@ -1,6 +1,7 @@
-package com.example.ms_productos.Config;
+package com.example.ms_ordenes.config;
 
-import com.example.ms_productos.constants.Rol;
+import com.example.ms_ordenes.constants.Rol;
+import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -16,17 +17,14 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfiguration {
-        private final JwtAuthenticationFilter jwtAuthenticationFilter;
-        private final String urls = "/api/productos/v1/**";
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
 
         httpSecurity.csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(request ->
-                        request.requestMatchers(HttpMethod.POST, urls).hasAnyAuthority(Rol.ADMIN.name(), Rol.SUPERADMIN.name())
-                                .requestMatchers(HttpMethod.PUT, urls).hasAnyAuthority(Rol.ADMIN.name(), Rol.SUPERADMIN.name())
-                                .requestMatchers(HttpMethod.DELETE, urls).hasAnyAuthority(Rol.ADMIN.name(), Rol.SUPERADMIN.name())
+                        request.requestMatchers(HttpMethod.GET, "/api/ordenes/**").hasAnyAuthority(Rol.ADMIN.name(), Rol.SUPERADMIN.name())
                                 .anyRequest().authenticated())
                 .sessionManagement(manager -> manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
@@ -34,7 +32,4 @@ public class SecurityConfiguration {
         return httpSecurity.build();
 
     }
-
-
-
 }

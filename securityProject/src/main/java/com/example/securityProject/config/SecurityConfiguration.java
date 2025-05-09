@@ -35,7 +35,6 @@ public class SecurityConfiguration {
                                 .requestMatchers(Constants.ENDPOINTS_USER).hasAnyAuthority(Rol.USUARIO.name())
                                 .requestMatchers(Constants.ENDPOINTS_ADMIN).hasAnyAuthority(Rol.ADMIN.name())
                                 .requestMatchers(Constants.ENDPOINTS_SUPERADMIN).hasAnyAuthority(Rol.SUPERADMIN.name())
-                                .requestMatchers(Constants.ENDPOINTS_PRODUCTOS).hasAnyAuthority(Rol.ADMIN.name(), Rol.SUPERADMIN.name())
                                 .anyRequest().authenticated())
                 .sessionManagement(manager -> manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider())

@@ -11,5 +11,4 @@ public class Constants {
     public static final String ENDPOINTS_USER= "/api/test/user/**";
     public static final String ENDPOINTS_ADMIN = "/api/test/admin/**";
     public static final String ENDPOINTS_SUPERADMIN = "/api/test/superadmin/**";
-    public static final String ENDPOINTS_PRODUCTOS = "/api/productos/v1/**";
 }
