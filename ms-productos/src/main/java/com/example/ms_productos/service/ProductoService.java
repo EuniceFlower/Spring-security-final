@@ -10,7 +10,7 @@ import java.util.List;
 
 public interface ProductoService {
     ResponseEntity<BaseResponse<Producto>> createProduct(RequestProducto producto);
-    ResponseEntity<BaseResponse<List<Producto>>>  ListProduct();
+    List<Producto>  ListProduct();
     ResponseEntity<BaseResponse<Producto>> updateProduct(RequestProducto producto, Long id);
     ResponseEntity<BaseResponse<Producto>> deleteProduct(Long id);
 

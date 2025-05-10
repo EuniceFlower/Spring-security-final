@@ -43,24 +43,16 @@ public class ProductoServiceImpl implements ProductoService {
     }
 
     @Override
-    public ResponseEntity<BaseResponse<List<Producto>>> ListProduct() {
+    public List<Producto> ListProduct() {
         List<Producto> productos = productoRepository.findAll();
-        BaseResponse<List<Producto>> response;
+        List<Producto> response;
 
         if (!productos.isEmpty()) {
-            response = BaseResponse.<List<Producto>>builder()
-                    .code(Constants.CODE_OK)
-                    .message(Constants.MSJ_OK)
-                    .data(Optional.of(productos))
-                    .build();
+            response = productos;
         } else {
-             response = BaseResponse.<List<Producto>>builder()
-                    .code(Constants.CODE_EXIST)
-                    .message(Constants.MSJ_EMPTY)
-                    .data(Optional.empty())
-                    .build();
+            response = List.of();
         }
-        return ResponseEntity.ok(response);
+            return response;
     }
 
     @Override

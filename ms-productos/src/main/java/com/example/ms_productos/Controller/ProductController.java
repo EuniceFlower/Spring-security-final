@@ -27,8 +27,8 @@ public class ProductController {
     }
 
     @GetMapping("/productos")
-    private ResponseEntity<BaseResponse<List<Producto>>> getAll() {
-        return productoService.ListProduct();
+    private ResponseEntity<List<Producto>> getAll() {
+        return ResponseEntity.ok(productoService.ListProduct());
     }
     @PutMapping("/productos/{id}")
     private ResponseEntity<BaseResponse<Producto>> update(@Valid @RequestBody RequestProducto product,

@@ -3,6 +3,7 @@ package com.example.securityProject.service.impl;
 import com.example.securityProject.aggregates.constants.Constants;
 import com.example.securityProject.aggregates.request.SignInRequest;
 import com.example.securityProject.aggregates.request.SignUpRequest;
+import com.example.securityProject.aggregates.response.BaseResponse;
 import com.example.securityProject.aggregates.response.SignInResponse;
 import com.example.securityProject.entity.Rol;
 import com.example.securityProject.entity.Usuario;
@@ -10,6 +11,7 @@ import com.example.securityProject.repository.UsuarioRepository;
 import com.example.securityProject.service.AuthenticationService;
 import com.example.securityProject.service.JwtService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -30,12 +32,27 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
 
     @Override
-    public Usuario signUpUser(SignUpRequest signUpRequest) {
-        Usuario usuario = getUsuarioEntity(signUpRequest);
-        Rol rol = Optional.of(Rol.valueOf(signUpRequest.getRol().toUpperCase()))
-                .orElseThrow(() -> new IllegalArgumentException("Rol no válido"));
-        usuario.setRol(rol);
-        return usuarioRepository.save(usuario);
+    public ResponseEntity<BaseResponse<Usuario>> signUpUser(SignUpRequest signUpRequest) {
+        BaseResponse<Usuario> response;
+
+        if (!usuarioRepository.existsByEmail(signUpRequest.getEmail())) {
+            Usuario usuario = getUsuarioEntity(signUpRequest);
+            Rol rol = Optional.of(Rol.valueOf(signUpRequest.getRol().toUpperCase()))
+                    .orElseThrow(() -> new IllegalArgumentException("Rol no válido"));
+            usuario.setRol(rol);
+
+            response = BaseResponse.<Usuario>builder()
+                    .code(Constants.CODE_OK)
+                    .message(Constants.MSJ_OK)
+                    .data(Optional.of(usuarioRepository.save(usuario)))
+                    .build();
+        } else {
+            response = BaseResponse.<Usuario>builder()
+                    .code(Constants.CODE_EXIST)
+                    .message(Constants.MSJ_DUPLICATED)
+                    .build();
+        }
+        return ResponseEntity.ofNullable(response);
     }
 
     @Override

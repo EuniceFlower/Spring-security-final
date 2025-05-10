@@ -2,6 +2,7 @@ package com.example.securityProject.controller;
 
 import com.example.securityProject.aggregates.request.SignInRequest;
 import com.example.securityProject.aggregates.request.SignUpRequest;
+import com.example.securityProject.aggregates.response.BaseResponse;
 import com.example.securityProject.aggregates.response.SignInResponse;
 import com.example.securityProject.entity.Usuario;
 import com.example.securityProject.service.AuthenticationService;
@@ -25,8 +26,8 @@ public class AuthenticationController {
     private final AuthenticationService authenticationService;
 
     @PostMapping("/register")
-    public ResponseEntity<Usuario> signUpUser(@Valid @RequestBody SignUpRequest signUpRequest){
-        return ResponseEntity.ok(authenticationService.signUpUser(signUpRequest));
+    public ResponseEntity<BaseResponse<Usuario>> signUpUser(@Valid @RequestBody SignUpRequest signUpRequest){
+        return authenticationService.signUpUser(signUpRequest);
     }
 //esto no, este va a servir para generar mi key que pegarpe en propertie key.signature
     @GetMapping("/clave")
